@@ -1,0 +1,22 @@
+// float pan_speed{10.f};
+            // KeysPressed pan{sf::Keyboard::W, sf::Keyboard::A, sf::Keyboard::S, sf::Keyboard::D};
+            // if (pan.any_pressed())
+            // {
+            //     if (pan.is_pressed(sf::Keyboard::W))
+            //     {
+            //         view.move({0.f, -pan_speed});
+            //     }
+            //     if (pan.is_pressed(sf::Keyboard::A))
+            //     {
+            //         view.move({-pan_speed, 0.f});
+            //     }
+            //     if (pan.is_pressed(sf::Keyboard::S))
+            //     {
+            //         view.move({0.f, pan_speed});
+            //     }
+            //     if (pan.is_pressed(sf::Keyboard::D))
+            //     {
+            //         view.move({pan_speed, 0.f});
+            //     }
+            //     window.setView(view);
+            // }

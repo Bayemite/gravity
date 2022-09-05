@@ -17,4 +17,3 @@ target_link_libraries(gravity sfml-system sfml-window sfml-graphics)
 # if(${WIN32})
 #     target_link_libraries(gravity sfml-main)
 # endif()
-cm
