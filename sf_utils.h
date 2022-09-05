@@ -2,6 +2,7 @@
 #define SF_UTILS_H
 
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
 #include <SFML/Window/Keyboard.hpp>
@@ -9,11 +10,25 @@
 #include <cmath>
 #include <initializer_list>
 #include <vector>
+#include<ostream>
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const sf::Vector2<T>& vec)
+{
+	os << '(' << vec.x << ", " << vec.y << ')';
+	return os;
+}
 
 // Helper- get centre coodinates of window
 sf::Vector2f center(const sf::WindowBase &window)
 {
     return sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
+}
+
+template<typename T>
+sf::Vector2<T> center(const sf::Rect<T>& rect)
+{
+	return rect.getSize()-rect.getPosition();
 }
 
 template<typename To, typename From>

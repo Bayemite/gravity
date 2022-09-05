@@ -11,42 +11,64 @@
 
 class GravityPoint : public sf::Drawable
 {
-    sf::CircleShape circle;
-    sf::Vector2f velocity;
-    float mass;
+    sf::CircleShape m_circle;
+    sf::Vector2f m_velocity;
+    float m_mass;
 
 protected:
     virtual void draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        target.draw(circle, states);
+        target.draw(m_circle, states);
     }
 
 public:
-    GravityPoint(const sf::Vector2f &pos, float radius, float mass = 1) : circle{radius, 64}
+    GravityPoint(const sf::Vector2f &pos) : m_circle{50.f, 64},
+                                            m_mass{10.f},
+                                            m_velocity{}
     {
-        circle.setPosition(pos);
+        m_circle.setPosition(pos);
+    }
+
+    void setMass(float mass)
+    {
+        m_mass=mass;
+    }
+
+    void setInitialVelocity(const sf::Vector2f &velocity)
+    {
+        m_velocity = velocity;
     }
 
     void updateVelocity(const GravityPoint &affector)
-    { 
+    {
         // https://en.wikipedia.org/wiki/Gravity
-        sf::Vector2f pos = center(circle.getGlobalBounds());
-        sf::Vector2f affectorPos = center(affector.circle.getGlobalBounds());
+        sf::Vector2f pos = center(m_circle.getGlobalBounds());
+        sf::Vector2f affectorPos = center(affector.m_circle.getGlobalBounds());
         sf::Vector2f diff = pos - affectorPos;
         float distance = sqrt(pow(diff.y, 2) + pow(diff.x, 2));
 
         // TODO: Units are magic, not determined yet
         int gConstant = 6; // 6.674×10^−11 m^3⋅kg^−1⋅s^−2
         // https://physics.stackexchange.com/questions/17285/split-gravitational-force-into-x-y-and-z-componenets
-        float forceX = diff.x * gConstant * mass * affector.mass / pow(distance, 2);
-        float forceY = diff.y * gConstant * mass * affector.mass / pow(distance, 2);
-        velocity.x += forceX / mass;
-        velocity.y += forceY / mass;
+        float forceX = diff.x * gConstant * m_mass * affector.m_mass / pow(distance, 2);
+        float forceY = diff.y * gConstant * m_mass * affector.m_mass / pow(distance, 2);
+        m_velocity.x += forceX / m_mass;
+        m_velocity.y += forceY / m_mass;
     }
 
     void updatePosition()
     {
-        circle.move(velocity.x, velocity.y);
+        m_circle.move(m_velocity);
+    }
+
+    // Appearance API
+    void setFillColor(const sf::Color &color)
+    {
+        m_circle.setFillColor(color);
+    }
+    void setRadius(float radius)
+    {
+        m_circle.setRadius(radius);
     }
 };
 
@@ -147,9 +169,8 @@ class App
                 if (i != j)
                     gravPoints[i].updateVelocity(gravPoints[j]);
 
-        for(GravityPoint& p : gravPoints)
+        for (GravityPoint &p : gravPoints)
             p.updatePosition();
-        
     }
 
 public:
@@ -159,6 +180,16 @@ public:
             viewZoom{1.f}
     {
         window.setFramerateLimit(60);
+        gravPoints.push_back(GravityPoint({0.f, 0.f}));
+        gravPoints.push_back(GravityPoint(center(window)));
+        
+        gravPoints[0].setFillColor(sf::Color::Red);
+        gravPoints[0].setInitialVelocity({10.f, 0.f});
+        gravPoints[0].setMass(1.f);
+        gravPoints[0].setRadius(10.f);
+
+        gravPoints[1].setFillColor(sf::Color::Blue);
+        gravPoints[1].setMass(100.f);
     }
 
     void run()
