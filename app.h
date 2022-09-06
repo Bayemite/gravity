@@ -27,6 +27,7 @@ public:
                                             m_velocity{}
     {
         m_circle.setPosition(pos);
+        setRadius(64.f);
     }
 
     void setMass(float mass)
@@ -42,13 +43,13 @@ public:
     void updateVelocity(const GravityPoint &affector)
     {
         // https://en.wikipedia.org/wiki/Gravity
-        sf::Vector2f pos = center(m_circle.getGlobalBounds());
-        sf::Vector2f affectorPos = center(affector.m_circle.getGlobalBounds());
-        sf::Vector2f diff = pos - affectorPos;
+        sf::Vector2f pos = m_circle.getPosition();
+        sf::Vector2f affectorPos = affector.m_circle.getPosition();
+        sf::Vector2f diff = affectorPos - pos;
         float distance = sqrt(pow(diff.y, 2) + pow(diff.x, 2));
 
         // TODO: Units are magic, not determined yet
-        int gConstant = 6; // 6.674×10^−11 m^3⋅kg^−1⋅s^−2
+        int gConstant = 1; // 6.674×10^−11 m^3⋅kg^−1⋅s^−2
         // https://physics.stackexchange.com/questions/17285/split-gravitational-force-into-x-y-and-z-componenets
         float forceX = diff.x * gConstant * m_mass * affector.m_mass / pow(distance, 2);
         float forceY = diff.y * gConstant * m_mass * affector.m_mass / pow(distance, 2);
@@ -69,6 +70,7 @@ public:
     void setRadius(float radius)
     {
         m_circle.setRadius(radius);
+        m_circle.setOrigin({radius, radius});
     }
 };
 
