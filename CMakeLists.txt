@@ -4,7 +4,7 @@ project(gravity)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(gravity main.cpp)
+add_executable(gravity app.cpp main.cpp)
 # add_executable(gravity WIN32 main.cpp)
 
 

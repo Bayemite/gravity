@@ -10,29 +10,29 @@
 #include <cmath>
 #include <initializer_list>
 #include <vector>
-#include<ostream>
+#include <ostream>
 
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const sf::Vector2<T>& vec)
+template <typename T>
+inline std::ostream &operator<<(std::ostream &os, const sf::Vector2<T> &vec)
 {
 	os << '(' << vec.x << ", " << vec.y << ')';
 	return os;
 }
 
 // Helper- get centre coodinates of window
-sf::Vector2f center(const sf::WindowBase &window)
+inline sf::Vector2f center(const sf::WindowBase &window)
 {
-    return sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
+	return sf::Vector2f(window.getSize().x / 2, window.getSize().y / 2);
 }
 
-template<typename T>
-sf::Vector2<T> center(const sf::Rect<T>& rect)
+template <typename T>
+inline sf::Vector2<T> center(const sf::Rect<T> &rect)
 {
-	return rect.getSize()-rect.getPosition();
+	return rect.getSize() - rect.getPosition();
 }
 
-template<typename To, typename From>
-inline sf::Vector2<To> round(const sf::Vector2<From>& vec)
+template <typename To, typename From>
+inline sf::Vector2<To> round(const sf::Vector2<From> &vec)
 {
 	return sf::Vector2<To>(std::round(vec.x), std::round(vec.y));
 }
@@ -45,7 +45,7 @@ inline sf::Vector2<To> round_vec2(const sf::Vector2<From> &vec)
 	return sf::Vector2<To>(std::round(vec.x), std::round(vec.y));
 }
 
-void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow &window, float zoom, sf::View &view)
+inline void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow &window, float zoom, sf::View &view)
 {
 	const sf::Vector2f beforeCoord{window.mapPixelToCoords(pixel)};
 	// sf::View view{ window.getView() };
@@ -75,9 +75,9 @@ struct KeysPressed
 
 	bool is_pressed(sf::Keyboard::Key key_pressed) const
 	{
-		for(sf::Keyboard::Key key : m_pressed)
+		for (sf::Keyboard::Key key : m_pressed)
 		{
-			if(key == key_pressed)
+			if (key == key_pressed)
 				return true;
 		}
 		return false;
@@ -88,13 +88,13 @@ struct KeysPressed
 		return (!m_pressed.empty());
 	}
 
-	bool any_pressed(const std::vector<sf::Keyboard::Key>& keys) const
+	bool any_pressed(const std::vector<sf::Keyboard::Key> &keys) const
 	{
-		for(sf::Keyboard::Key key: m_pressed)
+		for (sf::Keyboard::Key key : m_pressed)
 		{
-			for(sf::Keyboard::Key query_key : keys)
+			for (sf::Keyboard::Key query_key : keys)
 			{
-				if(key == query_key)
+				if (key == query_key)
 					return true;
 			}
 		}
