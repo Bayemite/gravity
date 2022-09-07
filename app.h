@@ -56,7 +56,7 @@ class App
 {
     sf::RenderWindow window;
     sf::View view;
-    float viewZoom; // view doesn't track zoom... why?? TODO: combine into zoom class
+    float viewZoom; // view doesn't track zoom... come on SFML. TODO: combine into zoom class
 
     sf::Vector2f mouseCoords;
     sf::Vector2i mousePixelCoords;
