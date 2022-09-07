@@ -1,8 +1,9 @@
 #ifndef CIRCLE_BUFFER_H
 #define CIRCLE_BUFFER_H
 
-#include <deque>
+#include <vector>
 
+// Contiguous memory
 template <typename T>
 class CircleBuffer
 {
@@ -11,17 +12,18 @@ public:
                                             m_data{}
     {
     }
+    
     void push(const T &val)
     {
         if (m_data.size() == m_size)
-            m_data.pop_front();
+            m_data.erase(m_data.begin());
         m_data.push_back(val);
     }
 
     void push(T &&val)
     {
         if (m_data.size() == m_size)
-            m_data.pop_front();
+            m_data.erase(m_data.begin());
         m_data.push_back(std::move(val));
     }
 
@@ -36,7 +38,7 @@ public:
         }
     }
 
-    size_t size()
+    size_t size() const
     {
         return m_data.size();
     }
@@ -46,8 +48,23 @@ public:
         return m_data[index];
     }
 
+    const T& operator[](size_t index) const
+    {
+        return m_data[index];
+    }
+
+    auto begin() const
+    {
+        return m_data.begin();
+    }
+
+    auto end() const
+    {
+        return m_data.end();
+    }
+
 private:
-    std::deque<T> m_data;
+    std::vector<T> m_data;
     size_t m_size;
 };
 

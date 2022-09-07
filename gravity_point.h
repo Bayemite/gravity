@@ -74,6 +74,11 @@ public:
         m_circle.setRadius(radius);
         m_circle.setOrigin({radius, radius});
     }
+
+    const sf::Color& getFillColor()
+    {
+        return m_circle.getFillColor();
+    }
 };
 
 #endif

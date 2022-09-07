@@ -1,7 +1,5 @@
 #include "app.h"
 
-#include "circle_buffer.h"
-
 App::App() : window{sf::VideoMode({800, 600}), "Gravity", sf::Style::Default, sf::ContextSettings(0, 0, 4)},
              view{sf::FloatRect(sf::Vector2f(0, 0), window.getView().getSize())},
              leftClicked{false},
@@ -112,34 +110,24 @@ void App::stepSim()
 
 void App::run()
 {
-    CircleBuffer<sf::CircleShape> paths;
-    paths.setSize(256);
-
     while (window.isOpen())
     {
         handleEvents();
         stepSim();
         window.clear(sf::Color::Black);
 
-        // Template obj.
-        sf::CircleShape pathPoint{2.f};
-        pathPoint.setOrigin({2.f, 2.f});
-
-        for (int i = 0; i < paths.size(); i++)
+        for(const auto& trace : traces)
         {
-            auto &dot = paths[i];
-            sf::Color color = dot.getFillColor();
-            color.a = i;
-            dot.setFillColor(color);
-            window.draw(paths[i]);
+            window.draw(trace);
         }
-
+        
         for (int i = 0; i < gravPoints.size(); i++)
         {
             auto &point = gravPoints[i];
-            pathPoint.setPosition(point.getPosition());
-            paths.push(pathPoint);
             window.draw(point);
+            if (i + 1 > traces.size())
+                traces.push_back(Trace(256, point.getFillColor()));
+            traces[i].push(point.getPosition());
         }
 
         window.display();
