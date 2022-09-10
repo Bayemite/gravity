@@ -37,3 +37,20 @@ public:
         return isDoubleClick[button];
     }
 };
+
+float panSpeed = 10.f*viewZoom;
+KeysPressed wasd{sf::Keyboard::W, sf::Keyboard::A, sf::Keyboard::S, sf::Keyboard::D};
+if (wasd.any_pressed())
+{
+    sf::Vector2f delta{};
+    if (wasd.is_pressed(sf::Keyboard::W))
+        delta.y -= panSpeed;
+    if(wasd.is_pressed(sf::Keyboard::S))
+        delta.y += panSpeed;
+    if(wasd.is_pressed(sf::Keyboard::A))
+        delta.x -= panSpeed;
+    if(wasd.is_pressed(sf::Keyboard::D))
+        delta.x += panSpeed;
+    view.move(delta);
+    window.setView(view);
+}

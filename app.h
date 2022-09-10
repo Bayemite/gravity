@@ -6,6 +6,8 @@
 #include "gravity_point.h"
 #include "sf_utils.h"
 
+#include "shape/LineShape.h"
+
 #include <SFML/Graphics.hpp>
 
 #include <cmath>
@@ -32,7 +34,7 @@ public:
 
     void push(const sf::Vector2f &pos)
     {
-        sf::CircleShape dot{2, 8};
+        sf::CircleShape dot{2, 16};
         dot.setOrigin({2.f, 2.f});
         dot.setPosition(pos);
         dot.setFillColor(m_color);
@@ -52,18 +54,26 @@ public:
     }
 };
 
+
 class App
 {
     sf::RenderWindow window;
     sf::View view;
     float viewZoom; // view doesn't track zoom... come on SFML. TODO: combine into zoom class
+    sf::View plainView;
 
     sf::Vector2f mouseCoords;
     sf::Vector2i mousePixelCoords;
     bool leftClicked;
+    sf::Vector2f lClickCoords;
+
+    bool newGravPoint;
+    LineShape m_newGravPointVec;
 
     std::vector<GravityPoint> gravPoints;
     std::vector<Trace> traces;
+
+    void addGravPoint(const sf::Vector2f &coords, const sf::Vector2f &velocity);
 
     void handleEvents();
     void stepSim();

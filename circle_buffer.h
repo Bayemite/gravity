@@ -3,7 +3,7 @@
 
 #include <vector>
 
-// Contiguous memory
+// Contiguous memory, deletes old elems from front of vector (not overwrite!)
 template <typename T>
 class CircleBuffer
 {
