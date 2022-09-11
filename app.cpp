@@ -1,5 +1,6 @@
 #include "app.h"
 
+#include <execution>
 #include <numeric>
 
 App::App() : window{sf::VideoMode({800, 600}), "Gravity", sf::Style::Default, sf::ContextSettings(0, 0, 4)},
@@ -10,7 +11,7 @@ App::App() : window{sf::VideoMode({800, 600}), "Gravity", sf::Style::Default, sf
              newGravPoint{false},
              m_newGravPointVec{{0.f, 0.f}, {0.f, 0.f}, 8.f}
 {
-    // window.setFramerateLimit(60);
+    window.setFramerateLimit(60);
 
     m_newGravPointVec.setFillColor(sf::Color::White);
 
@@ -177,7 +178,7 @@ void App::run()
     unsigned fontSize = 12;
     sf::Text stats{"FPS: N/A\nn=" + std::to_string(gravPoints.size()), robotoMono, fontSize};
     stats.setPosition({4.f, 4.f}); // Margin from top-left
-    CircleBuffer<int> fps{4};      // Average over four frames
+    int fps = 60;                  // Average over four frames
 
     while (window.isOpen())
     {
@@ -201,9 +202,10 @@ void App::run()
         window.draw(m_newGravPointVec);
 
         window.setView(plainView);
-        
-        fps.push(1000000.f / deltaClock.restart().asMicroseconds());
-        int avgFps = std::accumulate(fps.begin(), fps.end(), 0) / fps.size();
+
+        int avgFps = (fps + 1000000.f / deltaClock.restart().asMicroseconds()) / 2;
+        fps = avgFps;
+
         stats.setString(
             "FPS: " + std::to_string(avgFps) + "\n" +
             "n=" + std::to_string(gravPoints.size()));

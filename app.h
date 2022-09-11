@@ -22,8 +22,8 @@ class Trace : public sf::Drawable
 protected:
     virtual void draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        for (const auto &n : m_plot)
-            target.draw(n, states);
+        for (int i = 0; i < m_plot.size(); i++)
+            target.draw(m_plot[i], states);
     }
 
 public:

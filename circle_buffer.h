@@ -1,41 +1,55 @@
 #ifndef CIRCLE_BUFFER_H
 #define CIRCLE_BUFFER_H
 
+#include <cassert>
 #include <vector>
 
-// Contiguous memory, deletes old elems from front of vector (not overwrite!)
 template <typename T>
 class CircleBuffer
 {
 public:
-    CircleBuffer(size_t buffer_size = 256) : m_size{buffer_size},
-                                            m_data{}
+    CircleBuffer(size_t buffer_size = 256) : m_end{0},
+                                             m_data{},
+                                             m_maxSize{buffer_size}
     {
     }
-    
+
     void push(const T &val)
     {
-        if (m_data.size() == m_size)
-            m_data.erase(m_data.begin());
-        m_data.push_back(val);
+        if (m_data.size() < m_maxSize)
+        {
+            m_data.push_back(val);
+        }
+        else
+        {
+            if (m_end == m_data.size())
+                m_end = 0;
+            m_data[m_end] = val;
+        }
+        m_end++;
     }
 
     void push(T &&val)
     {
-        if (m_data.size() == m_size)
-            m_data.erase(m_data.begin());
-        m_data.push_back(std::move(val));
+        if (m_data.size() < m_maxSize)
+        {
+            m_data.push_back(std::move(val));
+        }
+        else
+        {
+            if (m_end == m_data.size())
+                m_end = 0;
+            m_data[m_end] = std::move(val);
+        }
+        m_end++;
     }
 
     void setSize(size_t size)
     {
-        m_size = size;
-        if (size_t dataSize = m_data.size(); dataSize > m_size)
-        {
-            m_data.erase(
-                m_data.begin(),
-                m_data.begin() + (dataSize - m_size));
-        }
+        if (size > m_data.size())
+            m_end = size;
+        m_data.resize(size);
+        m_maxSize = size;
     }
 
     size_t size() const
@@ -43,29 +57,26 @@ public:
         return m_data.size();
     }
 
+    // Not contiguous! Newest pushed to oldest
     T &operator[](size_t index)
     {
-        return m_data[index];
+        if (m_end + index >= m_data.size())
+            return m_data[m_end - m_data.size() + index];
+        return m_data[m_end + index];
     }
 
-    const T& operator[](size_t index) const
+    // Not contiguous! Newest pushed to oldest
+    const T &operator[](size_t index) const
     {
-        return m_data[index];
-    }
-
-    auto begin() const
-    {
-        return m_data.begin();
-    }
-
-    auto end() const
-    {
-        return m_data.end();
+        if (m_end + index >= m_data.size())
+            return m_data[m_end - m_data.size() + index];
+        return m_data[m_end + index];
     }
 
 private:
     std::vector<T> m_data;
-    size_t m_size;
+    size_t m_end;
+    size_t m_maxSize;
 };
 
 #endif
