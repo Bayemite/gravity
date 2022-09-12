@@ -3,14 +3,16 @@
 #include <execution>
 #include <numeric>
 
-App::App() : window{sf::VideoMode({800, 600}), "Gravity", sf::Style::Default, sf::ContextSettings(0, 0, 4)},
+App::App() : window{sf::VideoMode({800, 800}), "Gravity", sf::Style::Default, sf::ContextSettings(0, 0, 4)},
              view{sf::FloatRect(sf::Vector2f(0, 0), window.getView().getSize())},
              plainView{view},
              viewZoom{1.f},
              leftClicked{false},
              newGravPoint{false},
-             m_newGravPointVec{{0.f, 0.f}, {0.f, 0.f}, 8.f}
+             m_newGravPointVec{{0.f, 0.f}, {0.f, 0.f}, 8.f},
+             shader{}
 {
+    assert(sf::Shader::isAvailable());
     window.setFramerateLimit(60);
 
     m_newGravPointVec.setFillColor(sf::Color::White);
@@ -31,7 +33,7 @@ void App::addGravPoint(const sf::Vector2f &coords, const sf::Vector2f &velocity)
     GravityPoint point{coords};
     point.setInitialVelocity(velocity);
     gravPoints.push_back(point);
-    traces.push_back(Trace(256, gravPoints.back().getFillColor()));
+    traces.push_back(Trace(64, gravPoints.back().getFillColor()));
 }
 
 void App::handleEvents()
@@ -168,6 +170,7 @@ void App::stepSim()
 void App::run()
 {
     sf::Clock deltaClock;
+    sf::Clock elapsed;
 
     sf::Font robotoMono;
     if (!robotoMono.loadFromFile("fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf"))
@@ -180,12 +183,24 @@ void App::run()
     stats.setPosition({4.f, 4.f}); // Margin from top-left
     int fps = 60;                  // Average over four frames
 
+    // if (!shader.loadFromFile("shaders/default.vert", "shaders/circle.frag"))
+    // {
+    //     std::cerr << "Failed to load 'shaders/default.vert' and 'shaders/circle.frag'\n";
+    //     return;
+    // }
+
+    // sf::VertexArray arr{sf::PrimitiveType::TriangleFan}
+    // shader.setUniform("u_resolution", sf::Vector2f(window.getSize()));    
+
     while (window.isOpen())
     {
         handleEvents();
 
         stepSim();
         window.clear(sf::Color::Black);
+
+        // shader.setUniform("u_time", elapsed.getElapsedTime().asSeconds());
+        // window.draw(rect, &shader);
 
         for (int i = 0; i < gravPoints.size(); i++)
         {
@@ -203,12 +218,14 @@ void App::run()
 
         window.setView(plainView);
 
-        int avgFps = (fps + 1000000.f / deltaClock.restart().asMicroseconds()) / 2;
+        auto deltaTime = deltaClock.restart();
+        int avgFps = (fps + 1000000.f / deltaTime.asMicroseconds()) / 2;
         fps = avgFps;
 
         stats.setString(
-            "FPS: " + std::to_string(avgFps) + "\n" +
-            "n=" + std::to_string(gravPoints.size()));
+            "FPS: " + std::to_string(avgFps) + ", " + std::to_string(deltaTime.asMilliseconds()) + "ms/frame\n"
+                                                                                                   "n=" +
+            std::to_string(gravPoints.size()));
         window.draw(stats);
 
         window.setView(view);
