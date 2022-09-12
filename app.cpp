@@ -9,8 +9,8 @@ App::App() : window{sf::VideoMode({800, 800}), "Gravity", sf::Style::Default, sf
              viewZoom{1.f},
              leftClicked{false},
              newGravPoint{false},
-             m_newGravPointVec{{0.f, 0.f}, {0.f, 0.f}, 8.f},
-             shader{}
+             m_newGravPointVec{{0.f, 0.f}, {0.f, 0.f}, 8.f}
+            //  m_alphaFadeOff{}
 {
     assert(sf::Shader::isAvailable());
     window.setFramerateLimit(60);
@@ -183,14 +183,11 @@ void App::run()
     stats.setPosition({4.f, 4.f}); // Margin from top-left
     int fps = 60;                  // Average over four frames
 
-    // if (!shader.loadFromFile("shaders/default.vert", "shaders/circle.frag"))
+    // if (!m_alphaFadeOff.loadFromFile("shaders/default.vert", "shaders/alphaFadeOff.frag"))
     // {
-    //     std::cerr << "Failed to load 'shaders/default.vert' and 'shaders/circle.frag'\n";
+    //     std::cerr << "Failed to load 'shaders/default.vert' and 'shaders/alphaFadeOff.frag'\n";
     //     return;
     // }
-
-    // sf::VertexArray arr{sf::PrimitiveType::TriangleFan}
-    // shader.setUniform("u_resolution", sf::Vector2f(window.getSize()));    
 
     while (window.isOpen())
     {
@@ -211,6 +208,8 @@ void App::run()
 
         for (const auto &trace : traces)
         {
+            // m_alphaFadeOff.setUniform("vertsPerCircle", static_cast<int>(trace.getVertsPerCircle()));
+            // m_alphaFadeOff.setUniform("endPoint", static_cast<int>(trace.getVertEndPoint()));
             window.draw(trace);
         }
 
