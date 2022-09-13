@@ -34,8 +34,9 @@ class App
     std::vector<GravityPoint> gravPoints;
 
     std::vector<Trace> traces;
-    // sf::Shader m_alphaFadeOff;
+    sf::Shader m_alphaFadeOff;
 
+    bool m_pause;
 
     void addGravPoint(const sf::Vector2f &coords, const sf::Vector2f &velocity);
 

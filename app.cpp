@@ -9,8 +9,9 @@ App::App() : window{sf::VideoMode({800, 800}), "Gravity", sf::Style::Default, sf
              viewZoom{1.f},
              leftClicked{false},
              newGravPoint{false},
-             m_newGravPointVec{{0.f, 0.f}, {0.f, 0.f}, 8.f}
-            //  m_alphaFadeOff{}
+             m_newGravPointVec{{0.f, 0.f}, {0.f, 0.f}, 8.f},
+             m_alphaFadeOff{},
+             m_pause{false}
 {
     assert(sf::Shader::isAvailable());
     window.setFramerateLimit(60);
@@ -45,7 +46,21 @@ void App::handleEvents()
         {
         case sf::Event::KeyPressed:
         {
-            static sf::Vector2i cart_coords;
+            auto &data{event.key};
+            switch (data.code)
+            {
+            case sf::Keyboard::Space:
+            {
+                m_pause = !m_pause;
+                break;
+            }
+            default:
+                break;
+            }
+            break;
+        }
+        case sf::Event::KeyReleased:
+        {
             auto &data{event.key};
             switch (data.code)
             {
@@ -181,36 +196,36 @@ void App::run()
     unsigned fontSize = 12;
     sf::Text stats{"FPS: N/A\nn=" + std::to_string(gravPoints.size()), robotoMono, fontSize};
     stats.setPosition({4.f, 4.f}); // Margin from top-left
-    int fps = 60;                  // Average over four frames
+    int fps = 60;                  // Average over 2 frames
 
-    // if (!m_alphaFadeOff.loadFromFile("shaders/default.vert", "shaders/alphaFadeOff.frag"))
-    // {
-    //     std::cerr << "Failed to load 'shaders/default.vert' and 'shaders/alphaFadeOff.frag'\n";
-    //     return;
-    // }
+    if (!m_alphaFadeOff.loadFromFile("shaders/alphaFadeOff.vert", "shaders/default.frag"))
+    {
+        std::cerr << "Failed to load 'shaders/default.vert' and 'shaders/default.frag'\n";
+        return;
+    }
+    m_alphaFadeOff.setUniform("vertsPerCircle", static_cast<int>(traces.front().getVertsPerCircle()));
+    m_alphaFadeOff.setUniform("totalVerts", static_cast<int>(traces.front().getTotalVerts()));
 
     while (window.isOpen())
     {
         handleEvents();
 
-        stepSim();
+        if (!m_pause)
+            stepSim();
         window.clear(sf::Color::Black);
-
-        // shader.setUniform("u_time", elapsed.getElapsedTime().asSeconds());
-        // window.draw(rect, &shader);
 
         for (int i = 0; i < gravPoints.size(); i++)
         {
             auto &point = gravPoints[i];
             window.draw(point);
-            traces[i].push(point.getPosition());
+            if (!m_pause)
+                traces[i].push(point.getPosition());
         }
 
         for (const auto &trace : traces)
         {
-            // m_alphaFadeOff.setUniform("vertsPerCircle", static_cast<int>(trace.getVertsPerCircle()));
-            // m_alphaFadeOff.setUniform("endPoint", static_cast<int>(trace.getVertEndPoint()));
-            window.draw(trace);
+            m_alphaFadeOff.setUniform("endPoint", static_cast<int>(trace.getVertEndPoint()));
+            window.draw(trace, &m_alphaFadeOff);
         }
 
         window.draw(m_newGravPointVec);
@@ -222,9 +237,9 @@ void App::run()
         fps = avgFps;
 
         stats.setString(
-            "FPS: " + std::to_string(avgFps) + ", " + std::to_string(deltaTime.asMilliseconds()) + "ms/frame\n"
-                                                                                                   "n=" +
-            std::to_string(gravPoints.size()));
+            "FPS: " + std::to_string(avgFps) + ", " + std::to_string(deltaTime.asMilliseconds()) + "ms/frame\n" +
+            "n=" + std::to_string(gravPoints.size()) +
+            (m_pause ? "\nPaused" : ""));
         window.draw(stats);
 
         window.setView(view);

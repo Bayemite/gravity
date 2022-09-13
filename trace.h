@@ -36,8 +36,8 @@ public:
         // So basically, I'm too lazy to calc my own vertices
         // so I use the vertexFan points given by the CircleShape class
         // And convert it to triangle primitives for batch drawing multiple circles
-        m_vertsPerCircle = 3 + 3 * m_dot.getPointCount();
-        m_plotSize = m_vertsPerCircle * 255;
+        m_vertsPerCircle = 3 * m_dot.getPointCount();
+        m_plotSize = m_vertsPerCircle * 64; // 64 circles
         if (!m_plot.create(m_plotSize))
             std::cerr << "Failed to allocate tracing vertex buffer.\n";
     }
@@ -65,10 +65,6 @@ public:
             vert.position = center;
             circle.append(vert);
         }
-        vert.position = m_dot.getPosition() + m_dot.getPoint(size - 1);
-        circle.append(vert);
-        vert.position = m_dot.getPosition() + m_dot.getPoint(0);
-        circle.append(vert);
 
         if (m_insertPoint + m_vertsPerCircle >= m_plotSize)
             m_insertPoint = 0;
@@ -79,10 +75,9 @@ public:
         m_insertPoint += m_vertsPerCircle;
     }
 
-    size_t getVertsPerCircle() const
-    {
-        return m_vertsPerCircle;
-    }
+    size_t getVertsPerCircle() const { return m_vertsPerCircle; }
+
+    size_t getTotalVerts() const { return m_plotSize; }
 
     size_t getVertEndPoint() const { return m_insertPoint; }
 
