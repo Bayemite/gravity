@@ -1,3 +1,5 @@
+// https://github.com/SFML/SFML/wiki/Source:-Radial-Gradient-Shader
+#version 330
 const char RadialGradient[] =
 uniform vec4 color;
 uniform float expand;
